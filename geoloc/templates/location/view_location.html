@@ -5,12 +5,17 @@
     <title>User Location</title>
 </head>
 <body>
-    <h1>Your Location</h1>
-    {% if error %}
-        <p>{{ error }}</p>
+    {% if locations %}
+        <h1>Location History</h1>
+        <ul>
+            {% for location in locations %}
+                <li>
+                    Latitude: {{ location.latitude }}, Longitude: {{ location.longitude }}, Timestamp: {{ location.timestamp }}
+                </li>
+            {% endfor %}
+        </ul>
     {% else %}
-        <p>Latitude: {{ latitude }}</p>
-        <p>Longitude: {{ longitude }}</p>
+        <p>{{ error }}</p>
     {% endif %}
     <a href="/">Go Back</a>
 </body>

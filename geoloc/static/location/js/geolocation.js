@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('geolocationForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-
+    // Define a function to send geolocation data to the server
+    function sendGeolocationData() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
                 fetch('/location/abc/', {
@@ -16,11 +15,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     })
                 })
                 .then(response => response.json())
-                .then(data => alert(data.status || data.error))
+                .then(data => console.log(data.status || data.error))  // Log the response instead of alerting to avoid interruptions
                 .catch(error => console.error('Error:', error));
             });
         } else {
-            alert('Geolocation is not supported by your browser');
+            console.error('Geolocation is not supported by your browser');
         }
-    });
+    }
+
+    // Call the function every 3 seconds (3000 milliseconds)
+    setInterval(sendGeolocationData, 3000);
 });
