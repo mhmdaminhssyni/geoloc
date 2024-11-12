@@ -1,0 +1,15 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Location</title>
+    <script src="{% static 'location/js/geolocation.js' %}"></script>
+</head>
+<body>
+    <form id="geolocationForm">
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+        <button type="submit">Send Location</button>
+    </form>
+</body>
+</html>

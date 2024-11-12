@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Location</title>
+</head>
+<body>
+    <h1>Your Location</h1>
+    {% if error %}
+        <p>{{ error }}</p>
+    {% else %}
+        <p>Latitude: {{ latitude }}</p>
+        <p>Longitude: {{ longitude }}</p>
+    {% endif %}
+    <a href="/">Go Back</a>
+</body>
+</html>

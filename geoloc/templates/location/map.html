@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Locations Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map { height: 500px; }
+    </style>
+</head>
+<body>
+    <h1>Your Locations on Map</h1>
+    <div id="map"></div>
+
+    <!-- Embedding the JSON data in a <script> tag with ID `locations-data` -->
+    <script type="application/json" id="locations-data">
+        {{ locations|json_script:"locations-data" }}
+    </script>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        // Initialize the map and set its view
+        var map = L.map('map').setView([0, 0], 2); // Default global view
+
+        // Add the OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+        }).addTo(map);
+
+        // Load the locations data from the JSON script tag
+        var locations = JSON.parse(document.getElementById('locations-data').textContent);
+
+        // Add markers for each location
+        locations.forEach(function(location) {
+            var marker = L.marker([location.latitude, location.longitude]).addTo(map);
+            marker.bindPopup("Latitude: " + location.latitude + "<br>Longitude: " + location.longitude);
+        });
+
+        // Adjust the map view to fit all markers
+        if (locations.length > 0) {
+            var bounds = locations.map(loc => [loc.latitude, loc.longitude]);
+            map.fitBounds(bounds);
+        }
+    </script>
+</body>
+</html>
