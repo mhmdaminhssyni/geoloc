@@ -1,47 +1,63 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>User Locations Map</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Location Map</title>
+
+    <!-- Include Leaflet CSS and JavaScript from CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    
     <style>
-        #map { height: 500px; }
+        /* Set the map size */
+        #map {
+            height: 500px;
+            width: 100%;
+        }
     </style>
 </head>
 <body>
-    <h1>Your Locations on Map</h1>
+    <h2>User Location at {{ timestamp }}</h2>
     <div id="map"></div>
 
-    <!-- Embedding the JSON data in a <script> tag with ID `locations-data` -->
-    <script type="application/json" id="locations-data">
-        {{ locations|json_script:"locations-data" }}
+    <!-- Debugging: Display raw values for latitude and longitude -->
+    <p>Latitude: {{ latitude }}</p>
+    <p>Longitude: {{ longitude }}</p>
+
+    <!-- Pass latitude and longitude as JSON data -->
+    <script type="application/json" id="location-data">
+        {
+            "latitude": 15,
+            "longitude": 7
+        }
     </script>
 
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
-        // Initialize the map and set its view
-        var map = L.map('map').setView([0, 0], 2); // Default global view
+        document.addEventListener("DOMContentLoaded", function () {
+            try {
+                // Parse latitude and longitude from JSON script
+                const locationData = JSON.parse(document.getElementById('location-data').textContent);
+                const userLocation = [parseFloat(locationData.latitude), parseFloat(locationData.longitude)];
 
-        // Add the OpenStreetMap tiles
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 18,
-        }).addTo(map);
+                // Initialize the map centered at the user's location
+                const map = L.map('map').setView(userLocation, 14);
 
-        // Load the locations data from the JSON script tag
-        var locations = JSON.parse(document.getElementById('locations-data').textContent);
+                // Add OpenStreetMap tiles
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
 
-        // Add markers for each location
-        locations.forEach(function(location) {
-            var marker = L.marker([location.latitude, location.longitude]).addTo(map);
-            marker.bindPopup("Latitude: " + location.latitude + "<br>Longitude: " + location.longitude);
+                // Place a marker at the user's location
+                L.marker(userLocation).addTo(map)
+                    .bindPopup('User Location')
+                    .openPopup();
+            } catch (error) {
+                console.error("Error loading map:", error);
+                alert("Error loading map. Check console for details.");
+            }
         });
-
-        // Adjust the map view to fit all markers
-        if (locations.length > 0) {
-            var bounds = locations.map(loc => [loc.latitude, loc.longitude]);
-            map.fitBounds(bounds);
-        }
     </script>
 </body>
 </html>

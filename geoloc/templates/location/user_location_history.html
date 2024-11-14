@@ -1,48 +1,67 @@
-<!-- location/templates/location/user_location_history.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location History for {{ user.username }}</title>
+    
+    <!-- Leaflet CSS and JavaScript -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-<h1>Location History for {{ user.username }}</h1>
-<ul>
-    {% for location in locations %}
-        <li>
-            <a href="#" onclick="showLocation('{{ location.latitude|default:0 }}', '{{ location.longitude|default:0 }}');">
-                {{ location.timestamp }}
-            </a>
-        </li>
-    {% endfor %}
-</ul>
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Location History for {{ user.username }}</h1>
+    
+    <ul>
+        {% for location in locations %}
+            <li>
+                <a href="#" onclick="showLocation('{{ location.latitude }}', '{{ location.longitude }}'); return false;">
+                    {{ location.timestamp }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
 
-<div id="map" style="height: 400px; width: 100%;"></div>
+    <div id="map"></div>
 
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script>
+        // Initialize the map centered on a default location
+        const map = L.map('map').setView([0, 0], 2);
 
-<script>
-    // Initialize the map centered on a default location
-    const map = L.map('map').setView([0, 0], 2);
+        // Set up the map layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
 
-    // Set up the map layer
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 18,
-        attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
+        // Function to show location based on selected timestamp
+        function showLocation(lat, long) {
+            const latitude = parseFloat(lat);
+            const longitude = parseFloat(long);
 
-    // Function to show location based on selected timestamp
-    function showLocation(lat, long) {
-        const latitude = parseFloat(lat);
-        const longitude = parseFloat(long);
+            // Set the map view to the selected location
+            map.setView([latitude, longitude], 13);
 
-        map.setView([latitude, longitude], 13);
+            // Clear existing markers
+            map.eachLayer(function(layer) {
+                if (layer instanceof L.Marker) {
+                    map.removeLayer(layer);
+                }
+            });
 
-        // Clear existing markers
-        map.eachLayer(function(layer) {
-            if (layer instanceof L.Marker) {
-                map.removeLayer(layer);
-            }
-        });
-
-        // Add marker for selected location
-        L.marker([latitude, longitude]).addTo(map)
-            .bindPopup("Location at this timestamp")
-            .openPopup();
-    }
-</script>
+            // Add marker for the selected location
+            L.marker([latitude, longitude]).addTo(map)
+                .bindPopup("Location at this timestamp")
+                .openPopup();
+        }
+    </script>
+</body>
+</html>

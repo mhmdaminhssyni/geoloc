@@ -2,6 +2,7 @@
 from pathlib import Path
 from geoloc.local_settings import *
 import os
+from datetime import timedelta
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -23,8 +24,23 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'location.apps.LocationConfig'
+    'location.apps.LocationConfig',
+    'rest_framework',
+    'rest_framework_simplejwt',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),   # Access token will expire after 60 minutes
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),      # Refresh token will expire after 7 days
+    'ROTATE_REFRESH_TOKENS': False,                            
+    'UPDATE_LAST_LOGIN': False,
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
